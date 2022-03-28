@@ -10,9 +10,12 @@ class CocktailBookActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cocktail_book)
 
-        val cocktailsListLiveData = TheCocktailDBFetcher().fetchCocktailsList()
-        cocktailsListLiveData.observe(this) {
-            cocktailsList = it
+        val isFragmentContainerEmpty = savedInstanceState == null
+        if (isFragmentContainerEmpty) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentContainer, CocktailListRecyclerViewFragment.newInstance())
+                .commit()
         }
     }
 }
