@@ -48,7 +48,7 @@ class TheCocktailDBFetcher {
         val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
         CoroutineScope(Dispatchers.Main).launch {
             val response = theCocktailDBApi.fetchCocktailsByLetter(letter)
-            responseLiveData.postValue(response.drinks )
+            responseLiveData.postValue(response.drinks ?: listOf(Cocktail()))
         }
 
         return responseLiveData
