@@ -2,9 +2,10 @@ package com.gmail.domanskiquba.android.cocktailbook.api
 
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface TheCocktailDBApi {
     @GET( "1" +
-            "/search.php?f=a")
-    fun fetchCocktailsByLetter(): Call<String>
+            "/search.php")
+    fun fetchCocktailsByLetter(@Query("f") letter: Char): Call<TheCocktailDBResponse>
 }
