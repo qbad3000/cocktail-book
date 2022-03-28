@@ -1,16 +1,15 @@
 package com.gmail.domanskiquba.android.cocktailbook
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.gmail.domanskiquba.android.cocktailbook.api.TheCocktailDBApi
 import com.gmail.domanskiquba.android.cocktailbook.api.TheCocktailDBResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-private const val TAG = "TheCocktailDBFetcher"
 
 class TheCocktailDBFetcher {
 
@@ -26,13 +25,18 @@ class TheCocktailDBFetcher {
     }
 
     fun fetchCocktailsList(): LiveData<List<Cocktail>> {
-        val responseLiveData: MediatorLiveData<List<Cocktail>> = MediatorLiveData()
+        val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
 
-        for(letter in 'a'..'z') {
-            val fetchCocktailsByLetterResponse = fetchCocktailsByLetter(letter)
-            responseLiveData.addSource(fetchCocktailsByLetterResponse) {
-                responseLiveData.value = (responseLiveData.value?.plus(it) ?: it)
-                    .distinct().shuffled()
+        CoroutineScope(Dispatchers.Main).launch {
+            with(responseLiveData) {
+                postValue(
+                        ('a'..'z').map { letter ->
+                            CoroutineScope(Dispatchers.Main)
+                                .async { theCocktailDBApi.fetchCocktailsByLetter(letter) }
+                        }
+                            .map { response -> response.await() }
+                            .mapNotNull { it.drinks }
+                            .flatten().distinct().shuffled())
             }
         }
 
@@ -41,25 +45,11 @@ class TheCocktailDBFetcher {
 
 
     fun fetchCocktailsByLetter(letter: Char): LiveData<List<Cocktail>> {
-        val flickrRequest: Call<TheCocktailDBResponse> =
-            theCocktailDBApi.fetchCocktailsByLetter(letter)
         val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
-
-        flickrRequest.enqueue(object : Callback<TheCocktailDBResponse> {
-
-            override fun onFailure(call: Call<TheCocktailDBResponse>, t: Throwable) {
-                Log.e(TAG, "Failed to fetch cocktails", t)
-            }
-
-            override fun onResponse(
-                call: Call<TheCocktailDBResponse>,
-                response: Response<TheCocktailDBResponse>
-            ) {
-                Log.d(TAG, "Response received ${response.body()}")
-                responseLiveData.value = response.body()?.drinks ?: listOf(Cocktail())
-            }
-
-        })
+        CoroutineScope(Dispatchers.Main).launch {
+            val response = theCocktailDBApi.fetchCocktailsByLetter(letter)
+            responseLiveData.postValue(response.drinks )
+        }
 
         return responseLiveData
     }

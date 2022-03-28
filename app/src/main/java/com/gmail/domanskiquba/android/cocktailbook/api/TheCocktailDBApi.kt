@@ -7,5 +7,5 @@ import retrofit2.http.Query
 interface TheCocktailDBApi {
     @GET( "1" +
             "/search.php")
-    fun fetchCocktailsByLetter(@Query("f") letter: Char): Call<TheCocktailDBResponse>
+    suspend fun fetchCocktailsByLetter(@Query("f") letter: Char): TheCocktailDBResponse
 }
