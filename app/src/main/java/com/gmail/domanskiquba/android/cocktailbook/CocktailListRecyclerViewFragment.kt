@@ -57,7 +57,7 @@ class CocktailListRecyclerViewFragment : Fragment() {
 
         override fun onBindViewHolder(holder: CocktailHolder, position: Int) {
             val cocktail = cocktailsList[position]
-            holder.bindTitle(cocktail.idDrink)
+            holder.bindTitle(cocktail.idDrink.toString())
         }
     }
 

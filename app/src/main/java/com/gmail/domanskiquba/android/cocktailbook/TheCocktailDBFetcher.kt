@@ -29,14 +29,19 @@ class TheCocktailDBFetcher {
 
         CoroutineScope(Dispatchers.Main).launch {
             with(responseLiveData) {
-                postValue(
-                        ('a'..'z').map { letter ->
-                            CoroutineScope(Dispatchers.Main)
-                                .async { theCocktailDBApi.fetchCocktailsByLetter(letter) }
-                        }
-                            .map { response -> response.await() }
-                            .mapNotNull { it.drinks }
-                            .flatten().distinct().shuffled())
+
+                val responses = ('a'..'z').map { letter ->
+                        CoroutineScope(Dispatchers.Main)
+                            .async { theCocktailDBApi.fetchCocktailsByLetter(letter) }
+                    }.map{ response -> response.await() }
+
+                val flatListOfCocktails = responses.mapNotNull{it.drinks}.flatten()
+
+                val listOfNotNullCocktails = flatListOfCocktails.filterNotNull()
+                    .distinct().shuffled()
+
+                responseLiveData.postValue(listOfNotNullCocktails)
+
             }
         }
 
@@ -48,7 +53,7 @@ class TheCocktailDBFetcher {
         val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
         CoroutineScope(Dispatchers.Main).launch {
             val response = theCocktailDBApi.fetchCocktailsByLetter(letter)
-            responseLiveData.postValue(response.drinks ?: listOf(Cocktail()))
+            responseLiveData.postValue(response.drinks?.filterNotNull() ?: listOf(Cocktail()) )
         }
 
         return responseLiveData
