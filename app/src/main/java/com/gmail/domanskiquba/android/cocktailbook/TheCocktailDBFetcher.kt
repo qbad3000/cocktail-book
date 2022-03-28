@@ -2,7 +2,6 @@ package com.gmail.domanskiquba.android.cocktailbook
 
 import androidx.lifecycle.*
 import com.gmail.domanskiquba.android.cocktailbook.api.TheCocktailDBApi
-import com.gmail.domanskiquba.android.cocktailbook.api.TheCocktailDBResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -35,12 +34,12 @@ class TheCocktailDBFetcher {
                             .async { theCocktailDBApi.fetchCocktailsByLetter(letter) }
                     }.map{ response -> response.await() }
 
-                val flatListOfCocktails = responses.mapNotNull{it.drinks}.flatten()
+                val flatListOfResponseCocktails = responses.mapNotNull{it.drinks}.flatten()
 
-                val listOfNotNullCocktails = flatListOfCocktails.filterNotNull()
-                    .distinct().shuffled()
+                val listOfCocktails = flatListOfResponseCocktails.filterNotNull().map{Cocktail(it)}
+                    .distinctBy{ it.id }.shuffled()
 
-                responseLiveData.postValue(listOfNotNullCocktails)
+                responseLiveData.postValue(listOfCocktails)
 
             }
         }
@@ -49,7 +48,7 @@ class TheCocktailDBFetcher {
     }
 
 
-    fun fetchCocktailsByLetter(letter: Char): LiveData<List<Cocktail>> {
+    /*fun fetchCocktailsByLetter(letter: Char): LiveData<List<Cocktail>> {
         val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
         CoroutineScope(Dispatchers.Main).launch {
             val response = theCocktailDBApi.fetchCocktailsByLetter(letter)
@@ -57,5 +56,5 @@ class TheCocktailDBFetcher {
         }
 
         return responseLiveData
-    }
+    }*/
 }

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.gmail.domanskiquba.android.cocktailbook.Cocktail
 
 class CocktailListRecyclerViewFragment : Fragment() {
     private lateinit var cocktailsListRecyclerView: RecyclerView
@@ -57,7 +58,7 @@ class CocktailListRecyclerViewFragment : Fragment() {
 
         override fun onBindViewHolder(holder: CocktailHolder, position: Int) {
             val cocktail = cocktailsList[position]
-            holder.bindTitle(cocktail.idDrink.toString())
+            holder.bindTitle(cocktail.id.toString())
         }
     }
 
