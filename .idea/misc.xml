@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_cocktail_book.xml" value="0.20729166666666668" />
+        <entry key="app/src/main/res/layout/cocktail_list_item.xml" value="0.375" />
         <entry key="app/src/main/res/layout/cocktail_list_recycler_view_fragment.xml" value="0.20199275362318841" />
       </map>
     </option>

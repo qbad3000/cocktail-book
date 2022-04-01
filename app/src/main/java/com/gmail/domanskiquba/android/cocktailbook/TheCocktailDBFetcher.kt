@@ -40,7 +40,6 @@ class TheCocktailDBFetcher {
                     .distinctBy{ it.id }.shuffled()
 
                 responseLiveData.postValue(listOfCocktails)
-
             }
         }
 
