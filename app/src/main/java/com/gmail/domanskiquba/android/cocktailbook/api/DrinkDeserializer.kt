@@ -16,8 +16,9 @@ class DrinkDeserializer : JsonDeserializer<Cocktail> {
     ): Cocktail? {
         val drinkObject = json.asJsonObject
 
+        val id = drinkObject.get("idDrink").takeUnless { it is JsonNull }?.asString ?: UUID.randomUUID().toString()
         return Cocktail(
-            drinkObject.get("idDrink").takeUnless { it is JsonNull }?.asString ?: UUID.randomUUID().toString(),
+            id,
             drinkObject.get("strDrink").takeUnless { it is JsonNull }?.asString,
             drinkObject.get("strAlcoholic").takeUnless { it is JsonNull }?.asString,
             drinkObject.get("strGlass").takeUnless { it is JsonNull }?.asString,
@@ -27,7 +28,7 @@ class DrinkDeserializer : JsonDeserializer<Cocktail> {
                 val name = drinkObject.get("strIngredient$i").takeUnless { it is JsonNull }?.asString
                 val measure = drinkObject.get("strMeasure$i").takeUnless { it is JsonNull }?.asString
                 if (name != null && measure != null) {
-                    Ingredient(name, measure)
+                    Ingredient(name, measure, id)
                 } else null
             }
         )
