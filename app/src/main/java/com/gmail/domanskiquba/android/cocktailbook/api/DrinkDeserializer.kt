@@ -17,12 +17,12 @@ class DrinkDeserializer : JsonDeserializer<Cocktail> {
         val drinkObject = json.asJsonObject
 
         return Cocktail(
-            drinkObject.get("id").takeUnless { it is JsonNull }?.asString ?: UUID.randomUUID().toString(),
-            drinkObject.get("name").takeUnless { it is JsonNull }?.asString,
-            drinkObject.get("isAlcoholic").takeUnless { it is JsonNull }?.asString,
-            drinkObject.get("glass").takeUnless { it is JsonNull }?.asString,
-            drinkObject.get("instructions").takeUnless { it is JsonNull }?.asString,
-            drinkObject.get("thumbnail").takeUnless { it is JsonNull }?.asString,
+            drinkObject.get("idDrink").takeUnless { it is JsonNull }?.asString ?: UUID.randomUUID().toString(),
+            drinkObject.get("strDrink").takeUnless { it is JsonNull }?.asString,
+            drinkObject.get("strAlcoholic").takeUnless { it is JsonNull }?.asString,
+            drinkObject.get("strGlass").takeUnless { it is JsonNull }?.asString,
+            drinkObject.get("strInstructions").takeUnless { it is JsonNull }?.asString,
+            drinkObject.get("strDrinkThumb").takeUnless { it is JsonNull }?.asString,
             (1..15).mapNotNull { i ->
                 val name = drinkObject.get("strIngredient$i").takeUnless { it is JsonNull }?.asString
                 val measure = drinkObject.get("strMeasure$i").takeUnless { it is JsonNull }?.asString
