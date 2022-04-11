@@ -1,5 +1,7 @@
 package com.gmail.domanskiquba.android.cocktailbook.api
 
+import com.gmail.domanskiquba.android.cocktailbook.Cocktail
+
 class TheCocktailDBResponse {
-    val drinks: List<TheSingleCocktailResponse?>? = null
+    val drinks: List<Cocktail?>? = null
 }
