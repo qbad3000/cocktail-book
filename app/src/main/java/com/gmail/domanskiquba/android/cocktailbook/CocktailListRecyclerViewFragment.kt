@@ -34,7 +34,7 @@ class CocktailListRecyclerViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val cocktailsListLiveData = TheCocktailDBFetcher().fetchCocktailsList()
+        val cocktailsListLiveData = CocktailRepository.get().getCocktailsList()
         cocktailsListLiveData.observe(
             viewLifecycleOwner,
             Observer{   cocktailsList ->

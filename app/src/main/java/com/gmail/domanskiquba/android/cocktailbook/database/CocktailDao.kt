@@ -9,7 +9,7 @@ import com.gmail.domanskiquba.android.cocktailbook.Ingredient
 @Dao
 interface CocktailDao {
     @Query("SELECT * FROM cocktail")
-    fun getFavourites(): List<Cocktail>
+    suspend fun getFavourites(): List<Cocktail>
 
     @Delete
     fun delete(cocktail: Cocktail)

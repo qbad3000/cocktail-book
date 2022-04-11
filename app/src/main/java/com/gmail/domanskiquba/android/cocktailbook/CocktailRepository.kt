@@ -5,9 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
 import com.gmail.domanskiquba.android.cocktailbook.database.CocktailDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 private const val DATABASE_NAME = "crime-database"
 
@@ -24,16 +22,24 @@ class CocktailRepository(context: Context) {
     fun getCocktailsList() : LiveData<List<Cocktail>> {
         val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
 
-
         CoroutineScope(Dispatchers.Main).launch {
-            val cocktailsList = cocktailDao.getFavourites();
-            cocktailsList.forEach() {
-                launch { it.ingredients.addAll(ingredientDao.getIngredientList(it.id)) }
+                val cocktailsListDbDeferred = async{cocktailDao.getFavourites()}
+                val cocktailsListApiDeferred = async{ TheCocktailDBFetcher().fetchCocktailsList() }
+
+                val cocktailsListDb = cocktailsListDbDeferred.await()
+                cocktailsListDb.map {
+                    async {
+                        it.ingredients.addAll(ingredientDao.getIngredientList(it.id))
+                    }
+                }.awaitAll();
+
+                responseLiveData.postValue(cocktailsListDb);
+
+                val cocktailsListApi = cocktailsListApiDeferred.await()
+                    .filterNot { cocktailsListDb.contains(it) }.shuffled();
+
+                responseLiveData.postValue(cocktailsListDb + cocktailsListApi);
             }
-
-
-            responseLiveData.postValue(cocktailsList)
-        }
 
         return responseLiveData;
     }
