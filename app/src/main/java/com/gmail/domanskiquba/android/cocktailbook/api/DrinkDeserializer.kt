@@ -30,7 +30,7 @@ class DrinkDeserializer : JsonDeserializer<Cocktail> {
                 if (name != null && measure != null) {
                     Ingredient(name, measure, id)
                 } else null
-            }
+            } as MutableList<Ingredient>
         )
     }
 }

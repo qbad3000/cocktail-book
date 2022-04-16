@@ -7,22 +7,22 @@ import java.util.*
 
 @Entity
 data class Ingredient(
-    val name: String,
-    val measure: String,
-    val cocktailId: String
+    var name: String,
+    var measure: String,
+    var cocktailId: String
 ) {
-    @PrimaryKey val id = UUID.randomUUID().toString()
+    @PrimaryKey var id = UUID.randomUUID().toString()
 }
 
 @Entity
 data class Cocktail(
-    @PrimaryKey val id: String,
-    val drinkName: String?,
-    val alcoholic: String?,
-    val glass: String?,
-    val instructions: String?,
-    val thumbnail: String?,
-    @Ignore val ingredients: MutableList<Ingredient>,
+    @PrimaryKey var id: String,
+    var drinkName: String?,
+    var alcoholic: String?,
+    var glass: String?,
+    var instructions: String?,
+    var thumbnail: String?,
+    @Ignore var ingredients: MutableList<Ingredient>,
 ) {
     var favourite = false;
 
