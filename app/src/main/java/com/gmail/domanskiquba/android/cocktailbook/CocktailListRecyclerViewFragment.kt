@@ -62,6 +62,10 @@ class CocktailListRecyclerViewFragment : Fragment() {
 
             binding.favourite.setOnClickListener {
                 cocktail.favourite = !cocktail.favourite
+                if(cocktail.favourite)
+                    CocktailRepository.get().saveCocktail(cocktail)
+                else
+                    CocktailRepository.get().deleteCocktailFromDatabase(cocktail)
             }
         }
     }

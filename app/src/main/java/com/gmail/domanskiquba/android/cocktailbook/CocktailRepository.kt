@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
 import com.gmail.domanskiquba.android.cocktailbook.database.CocktailDatabase
 import kotlinx.coroutines.*
+import java.util.concurrent.Executors
 
 private const val DATABASE_NAME = "crime-database"
 
@@ -18,6 +19,7 @@ class CocktailRepository(context: Context) {
 
     private val cocktailDao = database.cocktailDao()
     private val ingredientDao = database.ingredientDao()
+    private val executor = Executors.newSingleThreadExecutor()
 
     fun getCocktailsList() : LiveData<List<Cocktail>> {
         val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
@@ -42,6 +44,23 @@ class CocktailRepository(context: Context) {
             }
 
         return responseLiveData;
+    }
+
+    fun saveCocktail(cocktail: Cocktail) {
+        CoroutineScope(Dispatchers.Main).launch {
+            async{ cocktailDao.addCocktail(cocktail) }
+            cocktail.ingredients.forEach() {
+                async {ingredientDao.addIngredient(it)}
+            }
+
+        }
+    }
+
+    fun deleteCocktailFromDatabase(cocktail: Cocktail) {
+        CoroutineScope(Dispatchers.Main).launch {
+            async{ cocktailDao.delete(cocktail) }
+            async{ ingredientDao.deleteByCocktailId(cocktail.id)}
+        }
     }
 
     companion object {
