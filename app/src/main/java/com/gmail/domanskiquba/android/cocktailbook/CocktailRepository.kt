@@ -19,31 +19,47 @@ class CocktailRepository(context: Context) {
 
     private val cocktailDao = database.cocktailDao()
     private val ingredientDao = database.ingredientDao()
-    private val executor = Executors.newSingleThreadExecutor()
 
-    fun getCocktailsList() : LiveData<List<Cocktail>> {
-        val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
+//    fun getCocktailsList() : LiveData<List<Cocktail>> {
+//        val responseLiveData: MutableLiveData<List<Cocktail>> = MutableLiveData()
+//
+//        CoroutineScope(Dispatchers.Main).launch {
+//                val cocktailsListDbDeferred = async{cocktailDao.getFavourites()}
+//                val cocktailsListApiDeferred = async{ TheCocktailDBFetcher().fetchCocktailsList() }
+//
+//                val cocktailsListDb = cocktailsListDbDeferred.await()
+//                cocktailsListDb.map {
+//                    async {
+//                        it.ingredients.addAll(ingredientDao.getIngredientList(it.id))
+//                    }
+//                }.awaitAll();
+//
+//                responseLiveData.postValue(cocktailsListDb);
+//
+//                val cocktailsListApi = cocktailsListApiDeferred.await()
+//                    .filterNot { cocktailsListDb.contains(it) }.shuffled();
+//
+//                responseLiveData.postValue(cocktailsListDb + cocktailsListApi);
+//            }
+//
+//        return responseLiveData;
+//    }
 
-        CoroutineScope(Dispatchers.Main).launch {
-                val cocktailsListDbDeferred = async{cocktailDao.getFavourites()}
-                val cocktailsListApiDeferred = async{ TheCocktailDBFetcher().fetchCocktailsList() }
-
-                val cocktailsListDb = cocktailsListDbDeferred.await()
-                cocktailsListDb.map {
-                    async {
+    suspend fun getFavourites() : List<Cocktail>  {
+        val cocktailsList = cocktailDao.getFavourites()
+        cocktailsList.map {
+            CoroutineScope(Dispatchers.Main).async {
                         it.ingredients.addAll(ingredientDao.getIngredientList(it.id))
-                    }
-                }.awaitAll();
-
-                responseLiveData.postValue(cocktailsListDb);
-
-                val cocktailsListApi = cocktailsListApiDeferred.await()
-                    .filterNot { cocktailsListDb.contains(it) }.shuffled();
-
-                responseLiveData.postValue(cocktailsListDb + cocktailsListApi);
             }
+        }.awaitAll();
+        return cocktailsList
 
-        return responseLiveData;
+        /*CoroutineScope(Dispatchers.Main).launch {
+            val cocktailsListDbDeferred = async {
+                cocktailDao.getFavourites()
+            }.await()
+
+        return cocktailsListDbDeferred*/
     }
 
     fun saveCocktail(cocktail: Cocktail) {
