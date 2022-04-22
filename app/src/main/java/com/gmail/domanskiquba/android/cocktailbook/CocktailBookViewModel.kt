@@ -1,5 +1,6 @@
 package com.gmail.domanskiquba.android.cocktailbook
 
+import androidx.databinding.ObservableInt
 import androidx.lifecycle.*
 import com.gmail.domanskiquba.android.cocktailbook.api.TheCocktailDBApi
 import kotlinx.coroutines.CoroutineScope
@@ -26,22 +27,28 @@ class CocktailBookViewModel : ViewModel() {
         }
     }
 
-
-    var selectedTab: Int = 0
-        set(value) {
-            field = value
+    var selectedTab = object : ObservableInt(0) {
+        override fun set(value: Int) {
+            super.set(value)
             expose()
         }
+    }
 
     var exposedList = MutableLiveData<List<Cocktail>>().apply { setValue(emptyList()) }
 
     private fun expose() {
-        if(selectedTab == 0)
+        if(selectedTab.get() == 0)
             exposedList.value = cocktails.filterNot{ it.favourite }
-        if(selectedTab == 1)
+        if(selectedTab.get() == 1)
             exposedList.value = cocktails.filter { it.favourite }.sortedBy { it.drinkName }
-        if(selectedTab == 2)
-            exposedList.value = cocktails.filter {it.drinkName?.contains(searchPhrase, true) ?: false}
+        if(selectedTab.get() == 2){
+            if(searchPhrase == "")
+                exposedList.value = emptyList()
+            else
+                exposedList.value = cocktails.filter {it.drinkName?.contains(searchPhrase, true) ?: false}
+                    .sortedBy { it.drinkName!!.indexOf(searchPhrase, ignoreCase = true) }
+        }
+
     }
 
     fun favouriteSwitch(cocktail: Cocktail){

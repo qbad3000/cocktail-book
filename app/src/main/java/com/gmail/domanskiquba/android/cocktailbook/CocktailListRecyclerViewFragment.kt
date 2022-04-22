@@ -1,22 +1,27 @@
 package com.gmail.domanskiquba.android.cocktailbook
 
+import android.content.ClipData
 import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
+import androidx.appcompat.view.menu.ActionMenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.BaseObservable
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ObservableInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gmail.domanskiquba.android.cocktailbook.Cocktail
 import com.gmail.domanskiquba.android.cocktailbook.databinding.CocktailListItemBinding
+import com.gmail.domanskiquba.android.cocktailbook.databinding.CocktailListRecyclerViewFragmentBinding
 import com.google.android.material.tabs.TabLayout
 import com.squareup.picasso.Picasso
 
@@ -28,6 +33,7 @@ class CocktailListRecyclerViewFragment : Fragment() {
 
     private var callbacks: Callbacks? = null
     private val cocktailBookViewModel: CocktailBookViewModel by activityViewModels()
+    private lateinit var binding: CocktailListRecyclerViewFragmentBinding
     private lateinit var cocktailsList: LiveData<List<Cocktail>>
     private lateinit var cocktailsListRecyclerView: RecyclerView
     private lateinit var tabLayout: TabLayout
@@ -49,14 +55,15 @@ class CocktailListRecyclerViewFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.cocktail_list_recycler_view_fragment, container, false)
+        binding = CocktailListRecyclerViewFragmentBinding.inflate(inflater)
 
-        tabLayout = view.findViewById(R.id.tabLayout)
+        binding.cocktailBookViewModel = cocktailBookViewModel
 
-        cocktailsListRecyclerView = view.findViewById(R.id.cocktails_list_recycler_view)
+        tabLayout = binding.tabLayout
+        cocktailsListRecyclerView = binding.cocktailsListRecyclerView
         cocktailsListRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,13 +72,16 @@ class CocktailListRecyclerViewFragment : Fragment() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                cocktailBookViewModel.selectedTab = tab!!.position
+                cocktailBookViewModel.selectedTab.set(tab!!.position)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
 
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
+
+        tabLayout.selectTab(tabLayout.getTabAt(cocktailBookViewModel.selectedTab.get()))
+
         cocktailBookViewModel.exposedList.observe(
             viewLifecycleOwner,
             Observer{   value ->
@@ -79,26 +89,23 @@ class CocktailListRecyclerViewFragment : Fragment() {
             }
         )
 
+        val searchView = binding.menuItemSearch
 
-    }
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener,
+            android.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(queryText: String): Boolean {
+                cocktailBookViewModel.searchPhrase = queryText
+                return true
+            }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.cocktail_list, menu)
+            override fun onQueryTextChange(queryText: String): Boolean {
+                cocktailBookViewModel.searchPhrase = queryText
+                return false
+            }
 
-        val searchView = menu.findItem(R.id.menu_item_search).actionView as SearchView
+        })
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(queryText: String): Boolean {
-                    cocktailBookViewModel.searchPhrase = queryText
-                    return true
-                }
 
-                override fun onQueryTextChange(queryText: String): Boolean {
-                    cocktailBookViewModel.searchPhrase = queryText
-                    return false
-                }
-            })
     }
 
 
@@ -112,7 +119,6 @@ class CocktailListRecyclerViewFragment : Fragment() {
         init{
             binding.cocktail = Cocktail()
         }
-
 
         fun bind(cocktail: Cocktail) {
             binding.cocktail = cocktail
