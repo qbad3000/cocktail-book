@@ -1,6 +1,5 @@
 package com.gmail.domanskiquba.android.cocktailbook.api
 
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 

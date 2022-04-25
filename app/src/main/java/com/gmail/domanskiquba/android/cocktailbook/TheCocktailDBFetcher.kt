@@ -1,6 +1,5 @@
 package com.gmail.domanskiquba.android.cocktailbook
 
-import androidx.lifecycle.*
 import com.gmail.domanskiquba.android.cocktailbook.api.DrinkDeserializer
 import com.gmail.domanskiquba.android.cocktailbook.api.TheCocktailDBApi
 import com.google.gson.GsonBuilder

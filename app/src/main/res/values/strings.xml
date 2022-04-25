@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">CocktailBook</string>
+
     <string name="ingredients">Ingredients</string>
+    <string name="recipe">Recipe</string>
+
     <string name="search">Search</string>
     <string name="favourites">Favourites</string>
     <string name="browse">Browse</string>
-
 </resources>

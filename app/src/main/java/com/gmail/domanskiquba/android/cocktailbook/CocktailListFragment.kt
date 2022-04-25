@@ -1,31 +1,20 @@
 package com.gmail.domanskiquba.android.cocktailbook
 
-import android.content.ClipData
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import android.widget.TextView
-import androidx.appcompat.view.menu.ActionMenuItem
 import androidx.appcompat.widget.SearchView
-import androidx.databinding.BaseObservable
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.gmail.domanskiquba.android.cocktailbook.Cocktail
+import com.gmail.domanskiquba.android.cocktailbook.databinding.CocktailListFragmentBinding
 import com.gmail.domanskiquba.android.cocktailbook.databinding.CocktailListItemBinding
-import com.gmail.domanskiquba.android.cocktailbook.databinding.CocktailListRecyclerViewFragmentBinding
 import com.google.android.material.tabs.TabLayout
 import com.squareup.picasso.Picasso
 
-class CocktailListRecyclerViewFragment : Fragment() {
+class CocktailListFragment : Fragment() {
 
     interface Callbacks {
         fun onCocktailSelected()
@@ -33,8 +22,7 @@ class CocktailListRecyclerViewFragment : Fragment() {
 
     private var callbacks: Callbacks? = null
     private val cocktailBookViewModel: CocktailBookViewModel by activityViewModels()
-    private lateinit var binding: CocktailListRecyclerViewFragmentBinding
-    private lateinit var cocktailsList: LiveData<List<Cocktail>>
+    private lateinit var binding: CocktailListFragmentBinding
     private lateinit var cocktailsListRecyclerView: RecyclerView
     private lateinit var tabLayout: TabLayout
 
@@ -49,13 +37,12 @@ class CocktailListRecyclerViewFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = CocktailListRecyclerViewFragmentBinding.inflate(inflater)
+        binding = CocktailListFragmentBinding.inflate(inflater)
 
         binding.cocktailBookViewModel = cocktailBookViewModel
 
@@ -84,9 +71,7 @@ class CocktailListRecyclerViewFragment : Fragment() {
 
         cocktailBookViewModel.exposedList.observe(
             viewLifecycleOwner,
-            Observer{   value ->
-                cocktailsListRecyclerView.adapter = CocktailAdapter(value)
-            }
+            { value -> cocktailsListRecyclerView.adapter = CocktailAdapter(value) }
         )
 
         val searchView = binding.menuItemSearch
@@ -102,12 +87,8 @@ class CocktailListRecyclerViewFragment : Fragment() {
                 cocktailBookViewModel.searchPhrase = queryText
                 return false
             }
-
         })
-
-
     }
-
 
     override fun onDetach() {
         super.onDetach()
@@ -153,9 +134,8 @@ class CocktailListRecyclerViewFragment : Fragment() {
         override fun getItemCount(): Int = cocktailsList.size
 
         override fun onBindViewHolder(holder: CocktailHolder, position: Int) {
-            holder.bind(cocktailsList[position]);
+            holder.bind(cocktailsList[position])
         }
     }
-
 
 }

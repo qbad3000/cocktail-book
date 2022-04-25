@@ -1,31 +1,44 @@
 package com.gmail.domanskiquba.android.cocktailbook
 
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.*
-import com.gmail.domanskiquba.android.cocktailbook.api.TheCocktailDBApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class CocktailBookViewModel : ViewModel() {
     private val cocktails = mutableListOf<Cocktail>()
     init {
-        CoroutineScope(Dispatchers.Main).launch {
-            val list = TheCocktailDBFetcher().fetchCocktailsList()
-                .filterNot { it.id in cocktails.map{ it.id } }
-            cocktails.addAll(list)
-            cocktails.shuffle()
-            expose()
-        }
+        requestApi()
+
         CoroutineScope(Dispatchers.Main).launch {
             val favourites = CocktailRepository.get().getFavourites()
             cocktails.filterNot { it.id in favourites.map { it.id } }
             cocktails.addAll(favourites)
             cocktails.shuffle()
-            expose()
+            if(selectedTab.get() == 1)
+                expose()
         }
     }
+
+    fun requestApi() {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                allowRefreshButton.set(false)
+                val list = TheCocktailDBFetcher().fetchCocktailsList()
+                    .filterNot { it.id in cocktails.map { it.id } }
+                cocktails.addAll(list)
+                cocktails.shuffle()
+                if( selectedTab.get() == 0 )
+                    expose()
+            }  catch(exception: Exception) {
+                allowRefreshButton.set(true)
+            }
+        }
+    }
+
+    val allowRefreshButton = ObservableBoolean(false)
 
     var selectedTab = object : ObservableInt(0) {
         override fun set(value: Int) {
@@ -48,8 +61,13 @@ class CocktailBookViewModel : ViewModel() {
                 exposedList.value = cocktails.filter {it.drinkName?.contains(searchPhrase, true) ?: false}
                     .sortedBy { it.drinkName!!.indexOf(searchPhrase, ignoreCase = true) }
         }
-
     }
+
+    var searchPhrase = ""
+        set(value) {
+            field = value
+            expose()
+        }
 
     fun favouriteSwitch(cocktail: Cocktail){
         if(cocktail.favourite) {
@@ -64,16 +82,4 @@ class CocktailBookViewModel : ViewModel() {
     }
 
     val selected = MutableLiveData<Cocktail>()
-    fun select(cocktail: Cocktail) {
-        selected.value = cocktail
-    }
-
-    fun search(phrase: String): List<Cocktail> {
-        return cocktails.filter {it.drinkName?.contains(searchPhrase, true) ?: false}
-    }
-    var searchPhrase = ""
-        set(value) {
-            field = value
-            expose()
-        }
 }

@@ -53,8 +53,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-<!--        android:button="@drawable/ic_baseline_favorite_border_24"-->
-        <!--            android:button="@{cocktail.favourite ? @drawable/ic_baseline_favorite_24 : @drawable/ic_baseline_favorite_border_24"-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

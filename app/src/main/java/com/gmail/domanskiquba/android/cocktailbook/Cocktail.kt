@@ -24,7 +24,7 @@ data class Cocktail(
     var thumbnail: String?,
     @Ignore var ingredients: MutableList<Ingredient>,
 ) {
-    var favourite = false;
+    var favourite = false
 
     constructor() : this(
         UUID.randomUUID().toString(),
