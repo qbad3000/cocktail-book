@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="cocktailBookViewModel"
+            type="com.gmail.domanskiquba.android.cocktailbook.CocktailBookViewModel" />
+        <import type="android.view.View"/>
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="@string/app_name"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp" >
+    <SearchView
+        android:id="@+id/menu_item_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:iconifiedByDefault="false"
+        android:visibility="@{cocktailBookViewModel.selectedTab == 2 ? View.VISIBLE : View.GONE}"/>
+    </androidx.appcompat.widget.Toolbar>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"
+        tools:layout_editor_absoluteX="-16dp">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_remaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_baseline_explore_24"
+            android:text="@string/browse" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_favourite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_baseline_favorite_24"
+            android:text="@string/favourites" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_baseline_search_24"
+            android:text="@string/search" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cocktails_list_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="55dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:clickable=
+            "@{cocktailBookViewModel.allowRefreshButton &amp;&amp; cocktailBookViewModel.selectedTab == 0 ? true : false }"
+        android:visibility=
+            "@{cocktailBookViewModel.allowRefreshButton &amp;&amp; cocktailBookViewModel.selectedTab == 0 ? View.VISIBLE : View.GONE }"
+        android:onClick="@{() -> cocktailBookViewModel.requestApi()}"
+        app:layout_constraintBottom_toBottomOf="@+id/cocktails_list_recycler_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"
+        app:srcCompat="@drawable/ic_baseline_autorenew_48"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
