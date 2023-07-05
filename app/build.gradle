@@ -34,6 +34,7 @@ android {
     buildFeatures{
         dataBinding true
     }
+    namespace 'com.gmail.domanskiquba.android.cocktailbook'
 }
 
 dependencies {
